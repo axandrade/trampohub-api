@@ -15,6 +15,15 @@ class VagaViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated(), IsEmpregador()]
         return [IsAuthenticated()]
 
+    def get_queryset(self):
+        queryset = Vaga.objects.all()
+        user = self.request.user
+
+        if user.groups.filter(name='Empregador').exists():
+            queryset = queryset.filter(empregador_id=user.id)
+
+        return queryset
+
     def perform_create(self, serializer):
         serializer.save(empregador_id=self.request.user.id)
 
@@ -27,6 +36,18 @@ class CandidaturaViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [IsAuthenticated(), IsCandidato()]
         return [IsAuthenticated()]
+
+    def get_queryset(self):
+        queryset = Candidatura.objects.all()
+        user = self.request.user
+
+        if user.groups.filter(name='Candidato').exists():
+            queryset = queryset.filter(candidato_id=user.id)
+        elif user.groups.filter(name='Empregador').exists():
+            vagas = Vaga.objects.filter(empregador_id=user.id)
+            queryset = queryset.filter(vaga__in=vagas)
+
+        return queryset
 
     def perform_create(self, serializer):
         vaga = serializer.validated_data.get('vaga')
