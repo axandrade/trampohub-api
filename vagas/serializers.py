@@ -24,7 +24,7 @@ class CandidaturaSerializer(DocumentSerializer):
 class PerfilSerializer(serializers.ModelSerializer):
     class Meta:
         model = Perfil
-        fields = ['tipo', 'nome_empresa']
+        fields = ['tipo', 'nome_empresa', 'foto']
 
 
 class CadastroSerializer(serializers.Serializer):
@@ -32,11 +32,17 @@ class CadastroSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, min_length=6)
     tipo = serializers.ChoiceField(choices=['empregador', 'candidato'])
     nome_empresa = serializers.CharField(required=False, allow_blank=True)
+    foto = serializers.ImageField(required=False, allow_null=True)
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError('Esse nome de usuário já existe.')
         return value
+
+    def validate(self, attrs):
+        if attrs.get('tipo') == 'candidato' and not attrs.get('foto'):
+            raise serializers.ValidationError({'foto': 'A foto é obrigatória para candidatos.'})
+        return attrs
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -46,6 +52,7 @@ class CadastroSerializer(serializers.Serializer):
         Perfil.objects.create(
             user=user,
             tipo=validated_data['tipo'],
-            nome_empresa=validated_data.get('nome_empresa', '')
+            nome_empresa=validated_data.get('nome_empresa', ''),
+            foto=validated_data.get('foto')
         )
         return user
