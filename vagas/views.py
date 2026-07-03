@@ -43,13 +43,13 @@ class VagaViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsEmpregador()]
-        return [IsAuthenticated()]
+        return [AllowAny()]
 
     def get_queryset(self):
         queryset = Vaga.objects.all()
         user = self.request.user
 
-        if user.groups.filter(name='Empregador').exists():
+        if user.is_authenticated and user.groups.filter(name='Empregador').exists():
             queryset = queryset.filter(empregador_id=user.id)
 
         return queryset
