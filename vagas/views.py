@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ValidationError
 from .models import Vaga, Candidatura
-from .serializers import VagaSerializer, CandidaturaSerializer, CadastroSerializer
+from .serializers import VagaSerializer, CandidaturaSerializer, CadastroSerializer, PerfilSerializer
 from .permissions import IsEmpregador, IsCandidato
 
 
@@ -19,6 +19,14 @@ class CadastroView(APIView):
             {'detail': 'Usuário criado com sucesso.'},
             status=status.HTTP_201_CREATED
         )
+
+
+class PerfilMeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = PerfilSerializer(request.user.perfil)
+        return Response(serializer.data)
 
 
 class VagaViewSet(viewsets.ModelViewSet):
