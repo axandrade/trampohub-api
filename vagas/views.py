@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ValidationError
 from .models import Vaga, Candidatura
-from .serializers import VagaSerializer, CandidaturaSerializer, CadastroSerializer, PerfilSerializer
+from .serializers import VagaSerializer, CandidaturaSerializer, CadastroSerializer, PerfilSerializer, EditarPerfilSerializer
 from .permissions import IsEmpregador, IsCandidato
 
 
@@ -28,6 +28,12 @@ class PerfilMeView(APIView):
     def get(self, request):
         serializer = PerfilSerializer(request.user.perfil)
         return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = EditarPerfilSerializer(data=request.data, context={'user': request.user})
+        serializer.is_valid(raise_exception=True)
+        perfil = serializer.save()
+        return Response(PerfilSerializer(perfil).data)
 
 
 class VagaViewSet(viewsets.ModelViewSet):
