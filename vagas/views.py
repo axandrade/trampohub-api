@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import status
 from rest_framework_mongoengine import viewsets
 from rest_framework.views import APIView
@@ -80,8 +82,12 @@ class CandidaturaViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        vaga = serializer.validated_data.get('vaga')
+        vaga_ref = serializer.validated_data.get('vaga')
         candidato_id = self.request.user.id
+        vaga = Vaga.objects.get(id=vaga_ref.id)
+
+        if vaga.data_fim and vaga.data_fim < datetime.datetime.utcnow():
+            raise ValidationError('Essa vaga já está com as candidaturas encerradas.')
 
         ja_existe = Candidatura.objects(vaga=vaga, candidato_id=candidato_id).first()
         if ja_existe:

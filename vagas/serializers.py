@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework_mongoengine.serializers import DocumentSerializer
 from rest_framework_mongoengine.fields import ReferenceField
 from rest_framework import serializers
@@ -6,19 +8,47 @@ from .models import Vaga, Candidatura, Perfil
 
 
 class VagaSerializer(DocumentSerializer):
+    status = serializers.SerializerMethodField()
+    data_fim = serializers.DateTimeField(required=True)
+
     class Meta:
         model = Vaga
-        fields = '__all__'
+        fields = [
+            'id', 'titulo', 'descricao', 'empresa', 'localizacao', 'salario',
+            'tipo_contrato', 'modalidade', 'empregador_id', 'data_inicio',
+            'data_fim', 'status', 'criado_em',
+        ]
         read_only_fields = ['empregador_id']
+
+    def get_status(self, obj):
+        if obj.data_fim and obj.data_fim < datetime.datetime.utcnow():
+            return 'Expirada'
+        return 'Aberta'
+
+    def validate(self, attrs):
+        for campo in ('data_inicio', 'data_fim'):
+            valor = attrs.get(campo)
+            if valor and valor.tzinfo is not None:
+                attrs[campo] = valor.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+
+        data_inicio = attrs.get('data_inicio')
+        data_fim = attrs.get('data_fim')
+        if data_inicio and data_fim and data_inicio > data_fim:
+            raise serializers.ValidationError({'data_fim': 'A data final deve ser depois da data inicial.'})
+        return attrs
 
 
 class CandidaturaSerializer(DocumentSerializer):
     vaga = ReferenceField(queryset=Vaga.objects.all())
+    vaga_detalhes = serializers.SerializerMethodField()
 
     class Meta:
         model = Candidatura
-        fields = '__all__'
+        fields = ['id', 'vaga', 'vaga_detalhes', 'candidato_id', 'status', 'mensagem', 'data_candidatura']
         read_only_fields = ['candidato_id']
+
+    def get_vaga_detalhes(self, obj):
+        return VagaSerializer(obj.vaga).data
 
 
 class PerfilSerializer(serializers.ModelSerializer):

@@ -16,6 +16,8 @@ class Vaga(Document):
     tipo_contrato = StringField(choices=['CLT', 'PJ', 'Freelance', 'Estágio'])
     modalidade = StringField(choices=['Presencial', 'Remoto', 'Híbrido'])
     empregador_id = IntField(required=True)  # vai referenciar o User do Django (SQLite)
+    data_inicio = DateTimeField()  # a partir de quando a vaga aceita candidaturas
+    data_fim = DateTimeField()  # a partir dessa data a vaga fica expirada
     criado_em = DateTimeField(default=datetime.datetime.utcnow)
 
     meta = {
