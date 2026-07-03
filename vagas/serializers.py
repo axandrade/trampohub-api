@@ -33,6 +33,7 @@ class CadastroSerializer(serializers.Serializer):
     tipo = serializers.ChoiceField(choices=['empregador', 'candidato'])
     nome_empresa = serializers.CharField(required=False, allow_blank=True)
     foto = serializers.ImageField(required=False, allow_null=True)
+    email = serializers.EmailField(required=False, allow_blank=True)
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -40,14 +41,18 @@ class CadastroSerializer(serializers.Serializer):
         return value
 
     def validate(self, attrs):
-        if attrs.get('tipo') == 'candidato' and not attrs.get('foto'):
-            raise serializers.ValidationError({'foto': 'A foto é obrigatória para candidatos.'})
+        if attrs.get('tipo') == 'candidato':
+            if not attrs.get('foto'):
+                raise serializers.ValidationError({'foto': 'A foto é obrigatória para candidatos.'})
+            if not attrs.get('email'):
+                raise serializers.ValidationError({'email': 'O e-mail é obrigatório para candidatos.'})
         return attrs
 
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
-            password=validated_data['password']
+            password=validated_data['password'],
+            email=validated_data.get('email', '')
         )
         Perfil.objects.create(
             user=user,
