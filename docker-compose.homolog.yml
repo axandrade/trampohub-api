@@ -1,0 +1,20 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: trampohub-mongo-homolog
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: trampohub123
+      MONGO_INITDB_DATABASE: trampohub
+
+  api:
+    image: trampohub-api:homolog
+    container_name: trampohub-api-homolog
+    ports:
+      - "8001:8000"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_HOST: mongodb

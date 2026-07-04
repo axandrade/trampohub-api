@@ -86,10 +86,11 @@ DATABASES = {
 }
 
 import sys
-
+import os
 from mongoengine import connect
 
 TESTING = 'pytest' in sys.modules
+
 
 if TESTING:
     import mongomock
@@ -101,9 +102,10 @@ if TESTING:
         uuidRepresentation='standard',
     )
 else:
+    MONGO_HOST = os.environ.get('MONGO_HOST', 'localhost')
     connect(
         db='trampohub',
-        host='mongodb://admin:trampohub123@localhost:27017/trampohub?authSource=admin',
+        host=f'mongodb://admin:trampohub123@{MONGO_HOST}:27017/trampohub?authSource=admin',
         uuidRepresentation='standard',
     )
 
