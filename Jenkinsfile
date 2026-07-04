@@ -10,22 +10,22 @@ pipeline {
 
         stage('Testes') {
             steps {
-                bat 'python -m venv venv'
-                bat 'venv\\Scripts\\pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt'
-                bat 'venv\\Scripts\\python -m pytest'
+                sh 'python3 -m venv venv'
+                sh './venv/bin/pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt'
+                sh './venv/bin/python -m pytest'
             }
         }
 
         stage('Build da imagem Docker') {
             steps {
-                bat 'docker build -t trampohub-api:homolog .'
+                sh 'docker build -t trampohub-api:homolog .'
             }
         }
 
         stage('Deploy Homologação') {
             steps {
-                bat 'docker compose -p trampohub-homolog -f docker-compose.homolog.yml down'
-                bat 'docker compose -p trampohub-homolog -f docker-compose.homolog.yml up -d'
+                sh 'docker compose -p trampohub-homolog -f docker-compose.homolog.yml down'
+                sh 'docker compose -p trampohub-homolog -f docker-compose.homolog.yml up -d'
             }
         }
     }
