@@ -148,10 +148,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'vagas.authentication.ExpiringTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+# Tempo de vida do token emitido em /api/token/. Depois disso o token e
+# invalidado e o usuario precisa fazer login novamente.
+TOKEN_EXPIRATION_MINUTES = 15
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
