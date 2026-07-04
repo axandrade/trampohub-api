@@ -9,10 +9,15 @@ pipeline {
         }
 
         stage('Testes') {
+            agent {
+                docker {
+                    image 'python:3.14-slim'
+                    args '-u root'
+                }
+            }
             steps {
-                sh 'python3 -m venv venv'
-                sh './venv/bin/pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt'
-                sh './venv/bin/python -m pytest'
+                sh 'pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt'
+                sh 'python -m pytest'
             }
         }
 
