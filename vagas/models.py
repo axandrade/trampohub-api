@@ -7,6 +7,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+def agora_utc():
+    """datetime.utcnow() esta depreciado; isso devolve o equivalente naive UTC."""
+    return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+
+
 class Vaga(Document):
     titulo = StringField(required=True, max_length=200)
     descricao = StringField(required=True)
@@ -18,7 +23,7 @@ class Vaga(Document):
     empregador_id = IntField(required=True)  # vai referenciar o User do Django (SQLite)
     data_inicio = DateTimeField()  # a partir de quando a vaga aceita candidaturas
     data_fim = DateTimeField()  # a partir dessa data a vaga fica expirada
-    criado_em = DateTimeField(default=datetime.datetime.utcnow)
+    criado_em = DateTimeField(default=agora_utc)
 
     meta = {
         'collection': 'vagas'
@@ -33,7 +38,7 @@ class Candidatura(Document):
         default='Pendente'
     )
     mensagem = StringField()  # carta de apresentação / mensagem opcional do candidato
-    data_candidatura = DateTimeField(default=datetime.datetime.utcnow)
+    data_candidatura = DateTimeField(default=agora_utc)
 
     meta = {
         'collection': 'candidaturas'

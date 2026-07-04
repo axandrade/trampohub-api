@@ -1,12 +1,10 @@
-import datetime
-
 from rest_framework import status
 from rest_framework_mongoengine import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import ValidationError
-from .models import Vaga, Candidatura
+from .models import Vaga, Candidatura, agora_utc
 from .serializers import VagaSerializer, CandidaturaSerializer, CadastroSerializer, PerfilSerializer, EditarPerfilSerializer
 from .permissions import IsEmpregador, IsCandidato
 
@@ -86,7 +84,7 @@ class CandidaturaViewSet(viewsets.ModelViewSet):
         candidato_id = self.request.user.id
         vaga = Vaga.objects.get(id=vaga_ref.id)
 
-        if vaga.data_fim and vaga.data_fim < datetime.datetime.utcnow():
+        if vaga.data_fim and vaga.data_fim < agora_utc():
             raise ValidationError('Essa vaga já está com as candidaturas encerradas.')
 
         ja_existe = Candidatura.objects(vaga=vaga, candidato_id=candidato_id).first()

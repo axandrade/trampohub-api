@@ -85,12 +85,27 @@ DATABASES = {
     }
 }
 
+import sys
+
 from mongoengine import connect
 
-connect(
-    db='trampohub',
-    host='mongodb://admin:trampohub123@localhost:27017/trampohub?authSource=admin'
-)
+TESTING = 'pytest' in sys.modules
+
+if TESTING:
+    import mongomock
+
+    connect(
+        'trampohub_test',
+        alias='default',
+        mongo_client_class=mongomock.MongoClient,
+        uuidRepresentation='standard',
+    )
+else:
+    connect(
+        db='trampohub',
+        host='mongodb://admin:trampohub123@localhost:27017/trampohub?authSource=admin',
+        uuidRepresentation='standard',
+    )
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

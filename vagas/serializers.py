@@ -4,7 +4,7 @@ from rest_framework_mongoengine.serializers import DocumentSerializer
 from rest_framework_mongoengine.fields import ReferenceField
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Vaga, Candidatura, Perfil
+from .models import Vaga, Candidatura, Perfil, agora_utc
 
 
 class VagaSerializer(DocumentSerializer):
@@ -21,7 +21,7 @@ class VagaSerializer(DocumentSerializer):
         read_only_fields = ['empregador_id']
 
     def get_status(self, obj):
-        if obj.data_fim and obj.data_fim < datetime.datetime.utcnow():
+        if obj.data_fim and obj.data_fim < agora_utc():
             return 'Expirada'
         return 'Aberta'
 
