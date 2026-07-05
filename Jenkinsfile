@@ -21,6 +21,17 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=trampohub-api -Dsonar.sources=."
+                    }
+                }
+            }
+        }
+
         stage('Build da imagem Docker') {
             steps {
                 sh 'docker build -t trampohub-api:homolog .'
@@ -32,7 +43,7 @@ pipeline {
                 sh 'docker compose --project-name trampohub-homolog -f docker-compose.homolog.yml down'
                 sh 'docker compose --project-name trampohub-homolog -f docker-compose.homolog.yml up -d'
             }
-}
+        }
     }
 
     post {
