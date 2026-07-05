@@ -29,10 +29,10 @@ pipeline {
 
         stage('Deploy Homologação') {
             steps {
-                sh 'docker compose -p trampohub-homolog -f docker-compose.homolog.yml down'
-                sh 'docker compose -p trampohub-homolog -f docker-compose.homolog.yml up -d'
+                sh 'docker compose --project-name trampohub-homolog -f docker-compose.homolog.yml down'
+                sh 'docker compose --project-name trampohub-homolog -f docker-compose.homolog.yml up -d'
             }
-        }
+}
     }
 
     post {
