@@ -163,7 +163,7 @@ TOKEN_EXPIRATION_MINUTES = 15
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://localhost:4201",
+    "http://localhost:4001",
 ]
-
 
 CORS_ALLOW_CREDENTIALS = True
