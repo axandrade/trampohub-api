@@ -15,6 +15,9 @@ pipeline {
                     args '-u root'
                 }
             }
+            environment {
+                DJANGO_SECRET_KEY = credentials('django-secret-key')
+            }
             steps {
                 sh 'pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt'
                 sh 'python -m pytest'
@@ -39,6 +42,9 @@ pipeline {
         }
 
         stage('Deploy Homologação') {
+            environment {
+                DJANGO_SECRET_KEY = credentials('django-secret-key')
+            }
             steps {
                 sh 'docker compose --project-name trampohub-homolog -f docker-compose.homolog.yml down'
                 sh 'docker compose --project-name trampohub-homolog -f docker-compose.homolog.yml up -d'
