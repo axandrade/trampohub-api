@@ -103,9 +103,10 @@ if TESTING:
     )
 else:
     MONGO_HOST = os.environ.get('MONGO_HOST', 'localhost')
+    MONGO_PASSWORD = config('MONGO_PASSWORD', default='trampohub123')
     connect(
         db='trampohub',
-        host=f'mongodb://admin:trampohub123@{MONGO_HOST}:27017/trampohub?authSource=admin',
+        host=f'mongodb://admin:{MONGO_PASSWORD}@{MONGO_HOST}:27017/trampohub?authSource=admin',
         uuidRepresentation='standard',
     )
 
@@ -165,4 +166,3 @@ CORS_ALLOWED_ORIGINS = [
 
 
 CORS_ALLOW_CREDENTIALS = True
-

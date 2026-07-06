@@ -6,7 +6,7 @@ services:
       - "27018:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: trampohub123
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: trampohub
 
   api:
@@ -19,3 +19,4 @@ services:
     environment:
       MONGO_HOST: mongodb
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}

@@ -17,6 +17,7 @@ pipeline {
             }
             environment {
                 DJANGO_SECRET_KEY = credentials('django-secret-key')
+                MONGO_PASSWORD = credentials('mongo-password')
             }
             steps {
                 sh 'pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt'
@@ -44,6 +45,7 @@ pipeline {
         stage('Deploy Homologação') {
             environment {
                 DJANGO_SECRET_KEY = credentials('django-secret-key')
+                MONGO_PASSWORD = credentials('mongo-password')
             }
             steps {
                 sh 'docker compose --project-name trampohub-homolog -f docker-compose.homolog.yml down'
