@@ -9,6 +9,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from .models import Vaga, Candidatura, agora_utc
 from .serializers import VagaSerializer, CandidaturaSerializer, CadastroSerializer, PerfilSerializer, EditarPerfilSerializer
 from .permissions import IsEmpregador, IsCandidato
+from .tasks import notificar_nova_candidatura
 
 
 class LoginView(ObtainAuthToken):
@@ -108,3 +109,4 @@ class CandidaturaViewSet(viewsets.ModelViewSet):
             raise ValidationError('Você já se candidatou a essa vaga.')
 
         serializer.save(candidato_id=candidato_id)
+        notificar_nova_candidatura.delay(vaga.titulo, candidato_id)
